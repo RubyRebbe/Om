@@ -46,14 +46,15 @@ describe App do
 
 	it "can interpret a binding" do
     @app.stack.clear
-    @app.symset.should be_empty
+    #@app.symset.should be_empty
+		@app.fstack.length.should == 1
     quote = Quote.new( " 360 x :  " )
 
 		@app.dot( quote )
 
 		@app.stack.should be_empty
-		@app.symset.keys.should == [ :x ]
-		@app.symset[:x][:value].should == 360
+		@app.fstack.keys.should == [ :x ]
+		@app.fstack.get( :x )[:value].should == 360
   end
 
 	it "can evaluate a symbol" do
@@ -68,8 +69,8 @@ describe App do
     @app.stack.clear
     quote = Quote.new( " [ 1028 y : ] # " )
 		@app.dot( quote )
-		@app.symset.length.should == 2
-		@app.symset[:y][:value].should == 1028
+		@app.fstack.stack.last.length.should == 2
+		@app.get( :y )[:value].should == 1028
   end
 
 	it "can handle an included module" do

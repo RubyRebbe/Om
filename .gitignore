@@ -23,6 +23,9 @@
 .byebug_history
 
 # vim files
-**/*.swp
-**/*.swo
-**/*.swm
+./spec/*.swp
+./models/*.swp
+./spec/*.swo
+./models/*.swo
+./spec/*.swm
+./models/*.swm

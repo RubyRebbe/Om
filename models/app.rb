@@ -1,12 +1,14 @@
+require 'pp'
 require "./models/om_modules.rb"
+require "./models/frame_stack.rb"
 
 class App
   include Stack
-  include Symset
-
-  # attr_accessor :symbols
+	attr_accessor :fstack
 
 	def initialize
+    @fstack = FrameStack.new
+
 		# implement boolean as integer
 		@integer_msgs = {
       add: lambda { |i|
@@ -56,6 +58,14 @@ class App
     }
   end
 
+	def set( k, v )
+    @fstack.set( k, v )
+  end
+
+	def get( k )
+    @fstack.get( k )
+  end
+
   def om_truth( b )
     b ? 1 : 0
   end
@@ -70,21 +80,42 @@ class App
       case e[:type]
       when :binding
         do_binding
+      when :bind_constant
+        do_bind_constant
       when :eval
         do_eval
       when :dot
         do_dot
+      when :dup
+        do_dup
+			when :symbol
+	      v = @fstack.get( e[:value] )
+				if ( v.class == Hash ) and ( v[:type] == :constant ) then
+					push( v[:value] )
+				else
+          push( e )
+        end
       else
-        push( e )
+          push( e )
       end
 		}
+  end
+
+	def do_dup
+    push( top )
   end
 
 	# stack: value symbol :
   def do_binding
     symbol = pop[:value]
 		value = pop
-		set( symbol, value )
+		@fstack.set( symbol, value )
+  end
+
+  def do_bind_constant
+    symbol = pop[:value]
+		value = pop
+		@fstack.set( symbol, { type: :constant, value: value } )
   end
 
   def do_eval
@@ -93,7 +124,7 @@ class App
 		case top[:type]
 		when :symbol
       symbol = top[:value]
-		  e = get( symbol )
+			e = @fstack.get( symbol )
       push( e )
 		when :quote
 			quote = Quote.new
@@ -104,16 +135,36 @@ class App
 
 	# optional_args object message .
   def do_dot
-    message = pop[:value]
+    message = pop
     object  = pop
 
 		# defer error handling for now
 		case object[:type]
     when :integer
-			@integer_msgs[message].call( object )
+      m = message[:value]
+			@integer_msgs[m].call( object )
     when :string
       # ditto :integer
-    when :udo      # user defined object
+    when :frame      # user defined object
+			@fstack.push( object )
+			# evaluate message in context of frame
+
+			quote = Quote.new
+			case message[:type]
+      when :quote
+			  quote.tree = message
+			  self.dot( quote )
+      when :symbol
+        # usr re-write rule:  frame symbol . -->  frame [ symbol # ] .
+				quote.tree = { 
+				  type: :quote,
+				  value: [ message,  { type: :eval, value: "#" } ]
+				}
+
+			  self.dot( quote )
+      end
+
+			@fstack.pop
     else
       # error
     end

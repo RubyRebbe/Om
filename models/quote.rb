@@ -17,12 +17,18 @@ class Quote
 
 	def to_token( e )
     case e
+    when "+"
+      { type: :dup, value: "+" }
+    when "{}"
+		  { type: :frame, value: {} }
     when "["
 		  { type: :open_quote, value: "[" }
     when "]"
 	    { type: :close_quote, value: "]" }
     when "#"
 	    { type: :eval, value: "#" }
+    when "::"
+	    { type: :bind_constant, value: "::" }
     when ":"
 	    { type: :binding, value: ":" }
     when "."

@@ -4,11 +4,15 @@ module Stack
   end
 
 	def push( x )
-    @stack.push( x )
+    stack.push( x )
   end
 
 	def pop
-    @stack.pop
+    stack.pop
+  end
+
+	def top
+    stack.last
   end
 end
 
