@@ -1,3 +1,4 @@
+require 'byebug'
 require "./models/om_modules.rb"
 require "./models/frame.rb"
 

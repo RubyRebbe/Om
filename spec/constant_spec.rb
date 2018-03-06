@@ -1,4 +1,5 @@
 require 'pp'
+require 'byebug'
 require "./models/quote.rb"
 require "./models/app.rb"
 

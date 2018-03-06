@@ -1,4 +1,5 @@
 require 'pp'
+require 'byebug'
 require "./models/om_modules.rb"
 require "./models/frame_stack.rb"
 
@@ -84,6 +85,9 @@ class App
         do_bind_constant
       when :eval
         do_eval
+      when :bang
+				ruby = pop[:value]
+				self.bang( ruby )
       when :dot
         do_dot
       when :dup
@@ -130,6 +134,9 @@ class App
 			quote = Quote.new
 			quote.tree = top
 			self.dot( quote )
+    when :string
+			quote = Quote.new( top[:value] )
+			self.dot( quote )
     end
   end
 
@@ -168,5 +175,17 @@ class App
     else
       # error
     end
+  end
+
+	def bang( ruby )
+    self.instance_eval( ruby )
+  end
+
+  def eval_file( filename)
+    f = File.open( filename  )
+		code = f.read
+		f.close
+		q = Quote.new( code )
+		self.dot( q )
   end
 end

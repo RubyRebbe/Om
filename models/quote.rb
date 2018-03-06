@@ -1,18 +1,22 @@
+require "./models/lexer.rb"
+
 class Quote
   attr_accessor :tree
 
   def initialize( s = "" ) 
     @str = s
 		@tree = []
+    @lexer = Lexer.new
 
-		tokens = to_tokens( @str )
+		tokens = @lexer.to_tokens( @str )
 		# no error processing for now
 		@tree = to_tree( tokens )
   end
 
 	# produces token sequence from string
 	def to_tokens( s )
-		s.strip.split.map { |e| to_token( e ) }
+		# s.strip.split.map { |e| to_token( e ) }
+		@lexer.to_tokens( s)
   end
 
 	def to_token( e )
@@ -31,6 +35,8 @@ class Quote
 	    { type: :bind_constant, value: "::" }
     when ":"
 	    { type: :binding, value: ":" }
+    when "!"
+	    { type: :bang, value: "!" }
     when "."
 	    { type: :dot, value: "." }
     when /"([^"]*)"/    # quoted string

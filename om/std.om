@@ -1,0 +1,3 @@
+ [ "exit" ! ] quit ::
+
+ [ "eval_file( pop[:value] )" ! ] use ::

@@ -1,3 +1,0 @@
-require "./models/om_modules.rb"
-
-describe

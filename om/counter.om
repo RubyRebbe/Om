@@ -1,0 +1,4 @@
+{} +  [ 
+  0 ctr : 
+	[ ctr # 1 add . ctr : ] inc :: 
+] . counter :: 
